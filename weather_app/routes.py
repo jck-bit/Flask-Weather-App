@@ -1,5 +1,3 @@
-from crypt import methods
-from unicodedata import name
 import requests
 from weather_app.models import City
 from weather_app import db
