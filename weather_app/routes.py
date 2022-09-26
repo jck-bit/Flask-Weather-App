@@ -1,3 +1,5 @@
+from crypt import methods
+from unicodedata import name
 import requests
 from weather_app.models import City
 from weather_app import db
@@ -5,9 +7,16 @@ from flask import Blueprint, jsonify, request, render_template
 
 weather = Blueprint('weather', __name__)
 
-
-@weather.route('/')
+@weather.route('/', methods=['POST', 'GET'])
 def index():
+    if request.method == 'POST':
+      new_city = request.form.get('city')
+
+      if new_city:
+        new_city_obj= City(name=new_city)
+
+        db.session.add(new_city_obj)
+        db.session.commit()
 
     cities = City.query.all()
 
@@ -31,16 +40,6 @@ def index():
 
     return render_template('weather.html', weather_data=weather_data)
 
-
-@weather.route('/city', methods=['POST'])
-def create_city():
-    data = request.get_json()
-
-    new_city = City(name=data['name'])
-    db.session.add(new_city)
-    db.session.commit()
-
-    return jsonify({"message": "New city created"})
 
 
 @weather.route('/city', methods=['GET'])
